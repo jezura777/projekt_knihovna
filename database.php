@@ -1,43 +1,78 @@
 <?php
 
-$db_sqlite = true;
+define("USE_SQLITE", true);
 
+define("SQLITE_PATH", __DIR__ . './my.db');
 
-if(!$db_sqlite) {
+define('MYSQL_ADDRESS', 'localhost');
+define('MYSQL_USER', 'root');
+define('MYSQL_PASSWORD', '');
+define('MYSQL_NAME', 'knihovnadivnice');
 
-    $db_address = 'localhost';
-    $db_user = 'root';
-    $db_password = ''
-    $db_name = 'knihovnadivnice';
+class db {
+    private static ?PDO $instance = null;
 
-    $conn = mysqli_connect($db_address, $db_user, $db_password, $db_name); 
-}
-else {
-    $db_path = './my.db';
-    $dsn = "sqlite:$db_path";
-    $pdo = new \PDO($dsn);
-}
-
-
-function insert_user($name, $date_of_birth, $email) {
-    $sql = "INSERT INTO users (name, date_of_birth, email) VALUES ($name, $date_of_birth, $email);"; 
-    if(!$db_sqlite) {
-        $vysl = mysqli_query($conn, $sql); 
+    public static function get(): self {
+        if (self::$instance === null) {
+            self::$instance = self::connect();
+        }
+        return new self();
     }
-    else {
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
+
+    private static function connect(): PDO {
+        if (USE_SQLITE) {
+            $pdo = new PDO('sqlie:' . SQLITE_PATH);
+            // I'm supposed to do something with enabling foreign keys but I'm too lazy... it will work without it I'm sure
+        } else {
+            $dsn = 'mysql:host=' . MYSQL_ADDRESS . ';dbname=' . MYSQL_NAME . ';charset=utfmb4';
+            $pdo = new PDO($dsn, MYSQL_USER, MYSQL_PASSWORD);
+        }
+
+        // some error exception attribute and associative array bullshit that I won't do cause I'm not an AI
+
+        return $pdo;
     }
+
+
+    // ******* functions for raw sqlign :3 ********
+    public function query(string $sql, array $params = []): array {
+        $stmt = self::$instance->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function execute(string $sql, array $params = []): ?array {
+        $stmt = self::$instance->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
+
+    public function last_id(): string {
+        return self::$instance->lastInsertId();
+    }
+
 }
 
-function insert_author($name, $date_of_birth, $date_of_death) {
-    $sql = "INSERT INTO authors (name, date_of_birth, date_of_death) VALUES ($name, $date_of_birth, $date_of_death);"; 
-    if(!$db_sqlite) {
-        $vysl = mysqli_query($conn, $sql); 
-    }
-    else {
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-    }
+$db = Database::get();
+
+function query_smthin($query_whaat): array {
+    return $db->query("SELECT * FROM " . $query_whaat . " ORDER BY name");
 }
-?>
+
+// TODO: make one insert function with var_args
+
+function insert_author(string $name, ?string $born, ?string $died): int {
+    $db->execute(
+        "INSERT INTO authors (name, born, died) VALUES (?, ?, ?)",
+        [$name, $born, $died]
+    );
+    return (int)$db->last_id();
+}
+
+function insert_book(string $title, ?string $published, ?int $author_id, int $copies = 1): int {
+    $db->execute(
+        "INSERT INTO books (title, published, author_id, copies) VALUES (?, ?, ?, ?)",
+        [$title, $published, $author_id, $copies]
+    );
+    return (int)$db->last_id();
+}
