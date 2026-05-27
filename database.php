@@ -53,13 +53,41 @@ class db {
 
 }
 
-$db = Database::get();
+$db = db::get();
 
 function query_smthin($query_whaat): array {
-    return $db->query("SELECT * FROM " . $query_whaat . " ORDER BY name");
+    if($query_whaat === 'books') {
+        return $this->query("
+            SELECT b.*, a.name AS author_name
+            FROM   books b
+            LEFT JOIN authors a ON a.id = b.author_id
+            ORDER BY b.title
+        ");
+    } elseif ($query_whaat === 'loans') {
+        return $this->query("
+            SELECT l.*,
+                   u.name  AS user_name,
+                   b.title AS book_title
+            FROM   loans l
+            JOIN   users u ON u.id = l.user_id
+            JOIN   books b ON b.id = l.book_id
+            ORDER BY l.loaned_on DESC
+        ");
+    } else {
+        return $db->query("SELECT * FROM " . $query_whaat . " ORDER BY name");
+    }
 }
 
 // TODO: make one insert function with var_args
+// 
+
+/*function insert(string table, array params = []): int {
+    $description = [
+        'authors' => ['name', 'born', 'died'],
+        'books' => ['title', 'published', 'author_id', 'copies'],
+        'users' => ['name', 'born', 'email']
+    ];
+}*/
 
 function insert_author(string $name, ?string $born, ?string $died): int {
     $db->execute(
@@ -69,10 +97,26 @@ function insert_author(string $name, ?string $born, ?string $died): int {
     return (int)$db->last_id();
 }
 
-function insert_book(string $title, ?string $published, ?int $author_id, int $copies = 1): int {
+function insert_book(string $title, ?string $published, int $author_id, int $copies = 1): int {
     $db->execute(
-        "INSERT INTO books (title, published, author_id, copies) VALUES (?, ?, ?, ?)",
+        "INSERT INTO books (titLe, published, author_id, copies) VALUES (?, ?, ?, ?)",
         [$title, $published, $author_id, $copies]
+    );
+    return (int)$db->last_id();
+}
+
+function insert_user(string $name, ?string $born, ?string $email): int {
+    $db->execute(
+        "INSERT INTO users (name, born, email) VALUES (?, ?, ?)",
+        [$name, $born, $email]
+    );
+    return (int)$db->last_id();
+}
+
+function insert_loan(int $user_id, int $book_id, ?string $processed_at, ?string $loaned_on, ?string $due_on): int {
+    $db->execute(
+        "INSERT INTO loans (user_id, book_id, processed_at, loaned_on, due_on) VALUES (?, ?, ?, ?, ?)",
+        [$user_id, $book_id, $processed_at, $loaned_on, $due_on]
     );
     return (int)$db->last_id();
 }

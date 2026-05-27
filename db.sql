@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS books (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100),
     published DATE,
-    author_id INT,
+    author_id INT NOT NULL,
     copies INT DEFAULT 1,
 
     FOREIGN KEY(author_id) REFERENCES authors(id)
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     born DATE,
-    email VARCHAR(255) UNIQUE
+    email VARCHAR(255) UNIQUE NOT NULL
 );
 
 
