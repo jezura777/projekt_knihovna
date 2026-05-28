@@ -31,9 +31,9 @@ CREATE TABLE IF NOT EXISTS loans (
     user_id INT NOT NULL,
     book_id INT NOT NULL,
 
-    processed_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     loaned_on DATE,
-    due_on DATE,
+    returned_on DATETIME,
 
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(book_id) REFERENCES book(id)
