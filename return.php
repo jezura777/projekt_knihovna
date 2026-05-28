@@ -48,8 +48,8 @@ function get_author(array $authors, int $id): array {
     </head>
     <body>
         <header>
-            <button onclick='window.location.href="index.html"'>Odhlásit</button>
-            <h1>Co si přečteš dnes, <?php echo($user["name"]) ?>?</h1>
+            <button onclick='window.location.href="dashboard.php?name=<?php echo($user["name"]) ?>"'>Přehled</button>
+            <h1>Jakou knížku dnes vrátíš, <?php echo($user["name"]) ?>?</h1>
         </header>
         <main>
             <?php if ($error) {
@@ -57,17 +57,6 @@ function get_author(array $authors, int $id): array {
                 echo('<strong>Chyba</strong>: '.$message);
                 echo('</div>');
             }?>
-            <section class="quick"> 
-                <h2>Rychlé akce</h2>
-                <div class="row">
-                <div class="return">
-                    <a class="<button> ok" href="return.php?name=<?php echo($user["name"])?>">Vrátit</a>
-                </div>
-                <div class="loan">
-                    <a class="<button> ok" href="loan.php?name=<?php echo($user["name"])?>">Vypůjčit</a>
-                </div>
-                </div>
-            </section>
             <?php 
                 $loaned_render = false;
                 $loaned = '<section class="returned"> <h2>Vypůjčeno</h2> <table>';
@@ -78,31 +67,13 @@ function get_author(array $authors, int $id): array {
                 foreach($loans as $loan) {
                     $book = get_book($books, $loan["book_id"]);
                     if($loan["returned_on"] === NULL) {
-                        $loaned = $loaned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["due_on"]."</td></tr>";
+                        $loaned = $loaned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["due_on"].'</td><td><button class="bad" onclick=\'window.location.href="return.php?name='.$user["name"].'&return='.$loan["id"].'"\'>Vrátit</button></td></tr>';
                         $loaned_render = true;
                         break;
                     }
                 }
                 $loaned = $loaned."</table> </section>";
                 if($loaned_render) echo($loaned);
-                        ?>
-            <?php 
-                $returned_render = false;
-                $returned = '<section class="returned"> <h2>Vrácené</h2> <table> ';
-                foreach(["Název", "Vypůjčeno", "Vráceno"] as $key) {
-                    $returned = $returned."<th>".$key."</th>";
-                }
-                $returned = $returned."</tr>";
-                foreach($loans as $loan) {
-                    $book = get_book($books, $loan["book_id"]);
-                    if($loan["returned_on"] !== NULL) {
-                        $returned = $returned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["returned_on"]."</td></tr>";
-                        $returned_render = true;
-                        break;
-                    }
-                }
-                $returned = $returned."</table> </section>";
-                if($returned_render) echo($returned);
                         ?>
         </main>
     
