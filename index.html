@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knihovna Divnice</title>
+    <link rel=stylesheet href=https://unpkg.com/missing.css@1.3.0>
+</head>
+<body>
+    <main>
+        <label for="username">Jméno: </label>
+        <input type="text" style="width:100%" id="username">
+        <p>
+        <button onclick="login()" id="login">Přihlásit</button>
+        <button class="info" onclick='window.location.href = "./register.php"'>Nemáte účet? Registrujte se u nás!</button>
+        </p>
+        <div id=ret class="warn box" style="visibility:hidden">
+        </div>
+    </main>
+</body>
+
+<script>
+    let username = document.getElementById("username");
+
+    username.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('login').click();
+      }
+    });
+
+    username.addEventListener("input", function (e) {
+        if(username.value == "") {
+            document.getElementById("login").classList.remove("ok");
+        } else {
+            document.getElementById("login").classList.add("ok");
+        }
+    });
+
+    async function login() {
+        name = document.getElementById("username").value.trim();
+        if (name === '') {
+            ret.style.visibility = "visible";
+            ret.innerHTML = "<p><strong>Chyba</strong>: Musíte zadat validní jméno uživatele, nebo se registrujte.</p>";
+            return;
+        }
+        try {
+            const resp = await fetch('./check_user.php?name=' + encodeURIComponent(name), {
+              method: 'GET',
+              headers: { 'Accept': 'text/plain' }
+            });
+            const text = (await resp.text()).trim();
+
+            if (text === 'false') {
+                window.location.href = `dashboard.php?name=${name}`;
+            } else if (text === 'true') {
+                ret.style.visibility = "visible";
+                ret.innerHTML = "<strong>Chyba</strong>: Musíte zadat validní jméno uživatele, nebo se registrujte.";
+            } else {
+                ret.style.visibility = "visible";
+                ret.innerHTML = "<strong>Chyba</strong>: Jiná chyba, prosím kontaktujte administrátora.";
+            }
+        } catch (err) {
+            console.error('Request failed', err);
+        }
+    }
+
+    
+</script>
+
+</html>
+

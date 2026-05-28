@@ -34,6 +34,9 @@ class db {
         // some error exception attribute and associative array bullshit that I won't do cause I'm not an AI
         // ... okay will do but only this one. The second one is usseless...
         $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        // ....... the second one is actually pretty usefull well I think I better set it ._.
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 
         return $pdo;
     }

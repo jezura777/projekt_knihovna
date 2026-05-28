@@ -1,4 +1,7 @@
 <?php
+
+phpinfo();
+
 require_once 'database.php';
 
 $db = db::get();
