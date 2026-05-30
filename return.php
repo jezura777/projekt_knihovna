@@ -9,7 +9,7 @@ if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["return"])) {
         try {
             $loan = get_by_id($loans, $ret);
             if ($loan) {
-                $db->execute("UPDATE loans SET returned_on=? WHERE ".$sqlite_fix2."=?", [date("Y-m-d H:m:s"),$loan["id"]]);
+                $db->execute("UPDATE loans SET returned_on=? WHERE ".$sqlite_fix2."=?", [date("Y-m-d H:i:s"),$loan["id"]]);
                 $db->execute("UPDATE books SET copies=? WHERE ".$sqlite_fix2."=?", [((int)(get_by_id($all_books, $loan["book_id"])["copies"])+1),$loan["book_id"]]);
                 // update copies off the book
                 update();

@@ -11,7 +11,7 @@ if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["loan"])) {
         try {
             $book = get_by_id($all_books, $loan);
             if ($book) {
-                $db->execute("INSERT INTO loans (user_id, book_id, due_on) VALUES (?,?,?)", [$user["id"], $book["id"], date("Y-m-d")]);
+                $db->execute("INSERT INTO loans (user_id, book_id, created_at, due_on) VALUES (?,?,?,?)", [$user["id"], $book["id"], date("Y-m-d H:i:s"), date("Y-m-d", strtotime("+30 days"))]);
                 $db->execute("UPDATE books SET copies=? WHERE ".$sqlite_fix2."=?", [((int)($book["copies"])-1),$book["id"]]);
                 update();
                 $status = true;

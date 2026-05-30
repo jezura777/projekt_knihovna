@@ -4,6 +4,10 @@ input {
     box-sizing: border-box;
 }
 
+tr:nth-child(odd) {
+    background-color: color-mix(in srgb, var(--bg), black 10%);;
+}
+
 input::placeholder {
     text-align: left !important;
 }

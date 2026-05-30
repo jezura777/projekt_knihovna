@@ -5,6 +5,8 @@ $sqlite_fix2 = (USE_SQLITE)? "rowid" : "id";
 
 $db = db::get();
 
+date_default_timezone_set("Europe/Prague");
+
 $user = [];
 $loans = [];
 $books = [];

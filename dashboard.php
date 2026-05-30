@@ -1,5 +1,6 @@
 
 <?php 
+// TODO: remove user
 require_once "common.php";
 ?>
 
@@ -23,8 +24,8 @@ require_once "common.php";
                 echo('<strong>Chyba</strong>: '.$message);
                 echo('</div>');
             }?>
-            <section class="quick"> 
-                <h2>Rychlé akce</h2>
+            <fieldset class="margin-block table">
+                <legend>Rychlé akce</legend>
                 <div class="row">
                 <div class="return">
                     <a class="<button> ok" href="return.php?name=<?php echo($user["name"])?>">Vrátit</a>
@@ -33,10 +34,10 @@ require_once "common.php";
                     <a class="<button> ok" href="loan.php?name=<?php echo($user["name"])?>">Vypůjčit</a>
                 </div>
                 </div>
-            </section>
+            </fieldset>
             <?php 
                 $loaned_render = false;
-                $loaned = '<section class="returned"> <h2>Vypůjčeno</h2> <table>';
+                $loaned = '<fieldset class="margin-block table"> <legend>Vypůjčeno</legend> <table>';
                 foreach(["Název", "Vypůjčeno", "Vrátit do"] as $key) {
                     $loaned = $loaned."<th>".$key."</th>";
                 }
@@ -48,12 +49,12 @@ require_once "common.php";
                         $loaned_render = true;
                     }
                 }
-                $loaned = $loaned."</table> </section>";
+                $loaned = $loaned."</table> </fieldset>";
                 if($loaned_render) echo($loaned);
                         ?>
             <?php 
                 $returned_render = false;
-                $returned = '<section class="returned"> <h2>Vrácené</h2> <table> ';
+                $returned = '<fieldset class="margin-block table"> <legend>Vrácené</legend> <table> ';
                 foreach(["Název", "Vypůjčeno", "Vráceno"] as $key) {
                     $returned = $returned."<th>".$key."</th>";
                 }
@@ -65,7 +66,7 @@ require_once "common.php";
                         $returned_render = true;
                     }
                 }
-                $returned = $returned."</table> </section>";
+                $returned = $returned."</table> </legend>";
                 if($returned_render) echo($returned);
                         ?>
         </main>
