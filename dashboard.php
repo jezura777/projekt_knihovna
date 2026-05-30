@@ -10,6 +10,7 @@ require_once "common.php";
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Můj přehled</title>
         <link rel=stylesheet href=https://unpkg.com/missing.css@1.3.0>
+        <link rel=stylesheet href="./style.css">
     </head>
     <body>
         <header>
@@ -41,7 +42,7 @@ require_once "common.php";
                 }
                 $loaned = $loaned."</tr>";
                 foreach($loans as $loan) {
-                    $book = get_book($books, $loan["book_id"]);
+                    $book = get_by_id($books, $loan["book_id"]);
                     if($loan["returned_on"] === NULL) {
                         $loaned = $loaned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["due_on"]."</td></tr>";
                         $loaned_render = true;
@@ -59,11 +60,10 @@ require_once "common.php";
                 }
                 $returned = $returned."</tr>";
                 foreach($loans as $loan) {
-                    $book = get_book($books, $loan["book_id"]);
+                    $book = get_by_id($books, $loan["book_id"]);
                     if($loan["returned_on"] !== NULL) {
                         $returned = $returned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["returned_on"]."</td></tr>";
                         $returned_render = true;
-                        break;
                     }
                 }
                 $returned = $returned."</table> </section>";

@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS loans (
 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     due_on DATE,
-    returned_on DATE,
+    returned_on DATETIME,
 
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(book_id) REFERENCES books(id)

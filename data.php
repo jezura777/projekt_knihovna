@@ -1,19 +1,12 @@
 <?php
-require_once "database.php";
-$db = db::get();
 
-$tables = ['authors', 'books'];
-if(isset($_GET["supersecretkey"])) {
-    if($_GET["supersecretkey"] == "password1234") {
-        $tables = ['authors', 'books', 'users', 'loans'];
-    }
-}
+require_once "common.php";
 
-echo('{');
-foreach($tables as $table){
-    echo('"'. $table .'": ');
-    echo(json_encode(query_smthin($db, $table)) . "<br>");
-    echo(',');
-}
-echo('}');
+echo("{");
+echo('"books": ');
+echo(json_encode($all_books));
+echo(',"authors": ');
+echo(json_encode($authors));
+echo("}");
+
 ?>
