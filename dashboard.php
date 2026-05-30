@@ -46,7 +46,6 @@ require_once "common.php";
                     if($loan["returned_on"] === NULL) {
                         $loaned = $loaned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["due_on"]."</td></tr>";
                         $loaned_render = true;
-                        break;
                     }
                 }
                 $loaned = $loaned."</table> </section>";

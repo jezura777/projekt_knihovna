@@ -10,8 +10,11 @@ if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["return"])) {
             $loan = get_by_id($loans, $ret);
             if ($loan) {
                 $db->execute("UPDATE loans SET returned_on=? WHERE ".$sqlite_fix2."=?", [date("Y-m-d H:m:s"),$loan["id"]]);
+                $db->execute("UPDATE books SET copies=? WHERE ".$sqlite_fix2."=?", [((int)(get_by_id($all_books, $loan["book_id"])["copies"])+1),$loan["book_id"]]);
                 // update copies off the book
                 update();
+                $status = true;
+                $message = "knížka byla úspěšně vrácena.";
             }
             
         } catch (PDOException $e) {
@@ -38,8 +41,13 @@ if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["return"])) {
         </header>
         <main>
             <?php if ($error) {
-                echo('<div id=ret class="warn box" style="visibility:hidden">');
+                echo('<div id=ret class="warn box">');
                 echo('<strong>Chyba</strong>: '.$message);
+                echo('</div>');
+            }?>
+            <?php if ($status) {
+                echo('<div id=ret class="ok box">');
+                echo($message);
                 echo('</div>');
             }?>
             <?php 
@@ -54,7 +62,6 @@ if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["return"])) {
                     if($loan["returned_on"] === NULL) {
                         $loaned = $loaned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["due_on"].'</td><td><button class="bad" onclick=\'window.location.href="return.php?name='.$user["name"].'&return='.$loan["id"].'"\'>Vrátit</button></td></tr>';
                         $loaned_render = true;
-                        break;
                     }
                 }
                 $loaned = $loaned."</table> </section>";

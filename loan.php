@@ -2,6 +2,8 @@
 <?php 
 require_once "common.php";
 
+$status = false;
+
 if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["loan"])) {
     $loan = (isset($_GET['loan']))? (int)$_GET['loan'] : null;
 
@@ -10,8 +12,10 @@ if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["loan"])) {
             $book = get_by_id($all_books, $loan);
             if ($book) {
                 $db->execute("INSERT INTO loans (user_id, book_id, due_on) VALUES (?,?,?)", [$user["id"], $book["id"], date("Y-m-d")]);
-                // update copies of the book
+                $db->execute("UPDATE books SET copies=? WHERE ".$sqlite_fix2."=?", [((int)($book["copies"])-1),$book["id"]]);
                 update();
+                $status = true;
+                $message = "Knížka byla úspěšně vypůjčena.";
             }
             
         } catch (PDOException $e) {
@@ -38,8 +42,13 @@ if($_SERVER["REQUEST_METHOD"] === 'GET' && isset($_GET["loan"])) {
         </header>
         <main>
             <?php if ($error) {
-                echo('<div id=ret class="warn box" style="visibility:hidden">');
+                echo('<div id=ret class="warn box">');
                 echo('<strong>Chyba</strong>: '.$message);
+                echo('</div>');
+            }?>
+            <?php if ($status) {
+                echo('<div id=ret class="info box">');
+                echo($message);
                 echo('</div>');
             }?>
 
