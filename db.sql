@@ -1,5 +1,5 @@
--- CREATE DATABASE knihovnadivnice;
--- USE knihovnadivnice;
+CREATE DATABASE IF NOT EXISTS knihovnadivnice;
+USE knihovnadivnice;
 
 CREATE TABLE IF NOT EXISTS authors (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS loans (
 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     due_on DATE,
-    returned_on DATETIME,
+    returned_on DATE,
 
     FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(book_id) REFERENCES book(id)
+    FOREIGN KEY(book_id) REFERENCES books(id)
 );

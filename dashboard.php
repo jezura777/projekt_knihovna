@@ -1,41 +1,6 @@
 
 <?php 
-require_once "database.php";
-
-$db = db::get();
-
-$error=false;
-try {
-    // replace the query so that it works with mysql
-    if(isset($_GET["name"])) {
-        $user = $db->query("SELECT rowid AS id,name,born,email FROM users WHERE name=?", [$_GET["name"]])[0];
-        $loans = $db->query("SELECT rowid AS id,user_id,book_id,created_at,due_on,returned_on FROM loans WHERE user_id=?", [$user["id"]]);
-        $books = [];
-        foreach($loans as $loan) {
-            $books[] = $db->query("SELECT rowid AS id,title,author_id,published,copies FROM books WHERE rowid=?", [$loan["book_id"]])[0];
-        }
-
-        $authors = [];
-        foreach($books as $book) {
-            $authors[] = $db->query("SELECT rowid AS id,name,born,died FROM authors WHERE rowid=?", [$book["author_id"]]);
-        }
-    }
-}
-catch (PDOException $e) {
-    $error=true;
-    $message=$e->getMessage();
-}
-
-function get_book(array $books, int $id): array {
-    foreach($books as $book) {
-        if($book["id"] === $id) return $book;
-    }
-}
-function get_author(array $authors, int $id): array {
-    foreach($authors as $author) {
-        if($author["id"] === $id) return $author;
-    }
-}
+require_once "common.php";
 ?>
 
 <!DOCTYPE html>

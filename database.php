@@ -27,7 +27,7 @@ class db {
             //
             
         } else {
-            $dsn = 'mysql:host=' . MYSQL_ADDRESS . ';dbname=' . MYSQL_NAME . ';charset=utfmb4';
+            $dsn = 'mysql:host=' . MYSQL_ADDRESS . ';dbname=' . MYSQL_NAME . ';charset=utf8mb4';
             $pdo = new PDO($dsn, MYSQL_USER, MYSQL_PASSWORD);
         }
 
