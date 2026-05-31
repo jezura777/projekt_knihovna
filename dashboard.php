@@ -59,6 +59,7 @@ require_once "common.php";
                     $returned = $returned."<th>".$key."</th>";
                 }
                 $returned = $returned."</tr>";
+                $loans = array_reverse($loans);
                 foreach($loans as $loan) {
                     $book = get_by_id($books, $loan["book_id"]);
                     if($loan["returned_on"] !== NULL) {
