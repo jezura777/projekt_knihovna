@@ -15,7 +15,10 @@ require_once "common.php";
     </head>
     <body>
         <header>
+            <div style="display: flex;flex-direction: row;justify-content: space-between">
             <button onclick='window.location.href="index.html"'>Odhlásit</button>
+            <button onclick='decide()' style="position:relative; right:0;"class="bad align-self:end" >Vymazat účet</button>
+            </div>
             <h1>Co si přečteš dnes, <?php echo($user["name"]) ?>?</h1>
         </header>
         <main>
@@ -45,7 +48,8 @@ require_once "common.php";
                 foreach($loans as $loan) {
                     $book = get_by_id($books, $loan["book_id"]);
                     if($loan["returned_on"] === NULL) {
-                        $loaned = $loaned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["due_on"]."</td></tr>";
+                        $red = ((date("Y-m-d") > $loan["due_on"])? "bad" : ((date("Y-m-d", strtotime("+3 days")) > $loan["due_on"])? "warn" : ""));
+                        $loaned = $loaned."<tr class=".$red." style=\"background: var(--box-bg);\"><td>".$book["title"]."</td><td>".date("d.m.Y H:i:s", strtotime($loan["created_at"]))."</td><td>".date("d.m.Y", strtotime($loan["due_on"]))."</td></tr>";
                         $loaned_render = true;
                     }
                 }
@@ -63,7 +67,7 @@ require_once "common.php";
                 foreach($loans as $loan) {
                     $book = get_by_id($books, $loan["book_id"]);
                     if($loan["returned_on"] !== NULL) {
-                        $returned = $returned."<tr><td>".$book["title"]."</td><td>".$loan["created_at"]."</td><td>".$loan["returned_on"]."</td></tr>";
+                        $returned = $returned."<tr><td>".$book["title"]."</td><td>".date("d.m.Y", strtotime($loan["created_at"]))."</td><td>".date("d.m.Y H:i:s", strtotime($loan["returned_on"]))."</td></tr>";
                         $returned_render = true;
                     }
                 }
@@ -73,4 +77,13 @@ require_once "common.php";
         </main>
     
     </body>
+<script>
+function decide() {
+    if (confirm('Chcete doopravdy vymazat Váš účet?')) {
+        window.location.href="delete_user.php?name=<?php echo($user["name"])?>"
+    } else {
+        alert("Sem si jako myslel!")
+    }
+}
+</script>
 </html>

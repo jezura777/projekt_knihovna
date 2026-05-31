@@ -1,6 +1,4 @@
 <?php 
-// TODO: input checking
-// TODO:
 require_once "common.php";
 
 $message = "";
@@ -88,7 +86,7 @@ $error = false;
                             $author = get_by_id($authors, $book['author_id']);
                             $author_name = ($author)? ($author['name']) : 'Neznámý';
                         ?>
-                        <tr>
+                        <tr onclick="window.location.href="update_book.php?id=$book["id"]"">
                             <td><?php echo($book['title']); ?></td>
                             <td><?php echo($author_name); ?></td>
                             <td><?php echo($book['published']); ?></td>
@@ -113,13 +111,71 @@ $error = false;
                     <?php foreach($authors as $author): ?>
                         <tr>
                             <td><?php echo($author['name']); ?></td>
-                            <td><?php echo($author['born']); ?></td>
-                            <td><?php echo($author['died']); ?></td>
+                            <td><?php echo(date("d.m.Y", strtotime($author['born']))); ?></td>
+                            <td><?php echo(date("d.m.Y", strtotime($author['died']))); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
             <?php else: ?>
                 <p>V knihovně nejsou žádní autoři.</p>
+            <?php endif; ?>
+        </fieldset>
+        <fieldset class="table margin-block">
+            <legend>Uživatelé (<?php echo(count($users)); ?>)</legend>
+            <?php if(count($users) > 0): ?>
+                    <?php foreach($users as $er): ?>
+                            <details>
+                            <summary style="display:flex; justify-content:space-between;">
+                            <div>
+                            <?php echo($er['name']); ?> -
+                            <?php echo($er['email']); ?>
+                            <?php echo(($er["born"])? "(*".date("d.m.Y", strtotime($er['born'])).")" : ""); ?>
+                            </div>
+                                <a href="delete_user.php?name=<?php echo($er["name"])?>" class="bad <button>">Vymazat uživatele</a>
+                            </summary>
+                            <?php 
+                                $loaned_render = false;
+                                $loaned = '<fieldset class="margin-block table"> <legend>Vypůjčeno</legend> <table>';
+                                foreach(["Název", "Vypůjčeno", "Vrátit do"] as $key) {
+                                    $loaned = $loaned."<th>".$key."</th>";
+                                }
+                                $loaned = $loaned."</tr>";
+                                foreach($all_loans as $loan) {
+                                    $book = get_by_id($all_books, $loan["book_id"]);
+                                    if($loan["returned_on"] === NULL && $er["id"] === $loan["user_id"]) {
+                                        $red = ((date("Y-m-d") > $loan["due_on"])? "bad" : ((date("Y-m-d", strtotime("+3 days")) > $loan["due_on"])? "warn" : ""));
+                                        $loaned = $loaned."<tr class=".$red." style=\"background: var(--box-bg);\"><td>".$book["title"]."</td><td>".date("d.m.Y H:i:s", strtotime($loan["created_at"]))."</td><td>".date("d.m.Y", strtotime($loan["due_on"]))."</td></tr>";
+                                        $loaned_render = true;
+                                    }
+                                }
+                                $loaned = $loaned."</table> </fieldset>";
+                                if($loaned_render) echo($loaned);
+                                        ?>
+
+                                <?php 
+                                    $returned_render = false;
+                                    $returned = '<fieldset class="margin-block table"> <legend>Vrácené</legend> <table> ';
+                                    foreach(["Název", "Vypůjčeno", "Vráceno"] as $key) {
+                                        $returned = $returned."<th>".$key."</th>";
+                                    }
+                                    $returned = $returned."</tr>";
+                                    $loans = array_reverse($loans);
+                                    foreach($all_loans as $loan) {
+                                        $book = get_by_id($all_books, $loan["book_id"]);
+                                        if($loan["returned_on"] !== NULL && $er["id"] === $loan["user_id"]) {
+                                            $returned = $returned."<tr><td>".$book["title"]."</td><td>".date("d.m.Y", strtotime($loan["created_at"]))."</td><td>".date("d.m.Y H:i:s", strtotime($loan["returned_on"]))."</td></tr>";
+                                            $returned_render = true;
+                                        }
+                                    }
+                                    $returned = $returned."</table> </legend>";
+                                    if($returned_render) echo($returned);
+                                            ?>
+                            </details>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            <?php else: ?>
+                <p>V knihovně nejsou žádní uživatelé.</p>
             <?php endif; ?>
         </fieldset>
     </main>

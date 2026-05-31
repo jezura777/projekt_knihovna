@@ -19,8 +19,6 @@ if($_SERVER["REQUEST_METHOD"] === 'POST') {
                 [$name, $born, $died]
             );
             $message = "Autor '{$name}' byl úspěšně přidán.";
-            $_SESSION['admin_message'] = $message;
-            $_SESSION['admin_status'] = true;
             header('Location: admin.php');
             exit;
         } catch (PDOException $e) {

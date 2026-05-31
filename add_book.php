@@ -26,8 +26,6 @@ if($_SERVER["REQUEST_METHOD"] === 'POST') {
                 [$title, $author_id, $published, $copies]
             );
             $message = "Kniha '{$title}' byla úspěšně přidána.";
-            $_SESSION['admin_message'] = $message;
-            $_SESSION['admin_status'] = true;
             header('Location: admin.php');
             exit;
         } catch (PDOException $e) {

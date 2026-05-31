@@ -49,12 +49,12 @@ width:100% !important;
     </header>
     <main>
         <form id="form" method="post">
-        <label for="username">Jméno:</label>
-        <input type="text" id="username" class="w100" name="username">
-        <label for="email">e-mail:</label>
-        <input type="text" id="email" class="w100" name="email">
+        <label for="username">Jméno: *</label>
+        <input type="text" id="username" class="w100" name="username" required>
+        <label for="email">e-mail: *</label>
+        <input type="email" id="email" class="w100" name="email" required>
         <label for="born">Datum narození:</label>
-        <input type="date" class="w100" name="born">
+        <input type="date" max="<?php echo(date("Y-m-d"))?>" class="w100" name="born">
         <br>
         <button type="submit" id="register">Registrovat</button>
         </form>
